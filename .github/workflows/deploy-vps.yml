@@ -1,0 +1,33 @@
+name: "Deploy VPS"
+
+on:
+  push:
+    branches: [ main ]
+    
+jobs:
+  deploying:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Get repository metadata
+        uses: varunsridharan/action-repository-meta@main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Deploy using ssh
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 22
+          script: |
+            cd ~/bot-resi
+            git pull
+            cd ..
+            docker-compose -f deploybot.yml up -d --build
+            docker image prune -f
+            docker volume prune -f
+            docker container prune -f

@@ -1,0 +1,12 @@
+FROM golang:1.18.3-alpine3.15 AS builder
+WORKDIR /build
+COPY . .
+RUN go mod download
+WORKDIR /build/bot-service
+RUN go build -o ./appbin
+
+FROM alpine:3.14.3
+WORKDIR /app
+COPY --from=builder /build/bot-service/appbin ./
+EXPOSE 2002
+CMD ["./appbin"]
