@@ -50,11 +50,11 @@ var (
 	}
 )
 
-func GetResiSicepatHistory(resi string) (SicepatRes, string, error) {
+func GetResiSicepatHistory(uri, resi string) (SicepatRes, string, error) {
 	getResponse := SicepatRes{}
 	rawBody := ""
 
-	req, err := http.NewRequest("GET", fmt.Sprintf("https://content-main-api-production.sicepat.com/public/check-awb/%s", resi), nil)
+	req, err := http.NewRequest("GET", fmt.Sprintf("%s/%s", uri, resi), nil)
 	if err != nil {
 		return getResponse, rawBody, err
 	}

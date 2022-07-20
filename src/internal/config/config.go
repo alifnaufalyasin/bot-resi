@@ -11,6 +11,7 @@ type Config struct {
 	Secret           string
 	Port             string `env:"PORT,default=80"`
 	TelegramApiToken string `env:"TELEGRAM_APITOKEN"`
+	UriSicepat       string `env:"URI_SICEPAT"`
 }
 
 type DatabaseConfig struct {
@@ -30,5 +31,6 @@ func GetConfig() Config {
 		Secret:           os.Getenv("SECRET"),
 		Port:             os.Getenv("PORT"),
 		TelegramApiToken: os.Getenv("TELEGRAM_APITOKEN"),
+		UriSicepat:       os.Getenv("URI_SICEPAT"),
 	}
 }

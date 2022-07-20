@@ -12,7 +12,7 @@ import (
 	"github.com/rs/zerolog"
 )
 
-func CheckStatusResi(ctx context.Context, db db.Database, bot *tgbotapi.BotAPI, log zerolog.Logger) {
+func CheckStatusResi(ctx context.Context, db db.Database, bot *tgbotapi.BotAPI, uri string, log zerolog.Logger) {
 	log.Info().Timestamp().Msg("Run Check")
 	dataResi, err := db.GetDataResi(ctx)
 	if err != nil {
@@ -26,7 +26,7 @@ func CheckStatusResi(ctx context.Context, db db.Database, bot *tgbotapi.BotAPI, 
 		msg := ""
 		send := false
 		if res.Vendor == "sicepat" {
-			msg, send, err = UpdateResiSicepat(&res, log)
+			msg, send, err = UpdateResiSicepat(&res, uri, log)
 		}
 
 		if res.Vendor == "jne" {

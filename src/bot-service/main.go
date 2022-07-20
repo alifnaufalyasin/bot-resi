@@ -37,7 +37,7 @@ func main() {
 
 	// Cron Function
 	s := gocron.NewScheduler(time.UTC)
-	_, err = s.Every(1).Minute().SingletonMode().Do(controller.CheckStatusResi, context.Background(), db, bot, logger)
+	_, err = s.Every(1).Minute().SingletonMode().Do(controller.CheckStatusResi, context.Background(), db, bot, cfg.UriSicepat, logger)
 	if err != nil {
 		logger.Error().Timestamp().Err(err).Msg("Cron error")
 	}
@@ -87,7 +87,7 @@ func main() {
 			if err != nil {
 				logger.Error().Err(err).Timestamp().Msg("error Save Resi")
 			}
-			message, send, err := controller.UpdateResiSicepat(&res, logger)
+			message, send, err := controller.UpdateResiSicepat(&res, cfg.UriSicepat, logger)
 			if err != nil {
 				logger.Error().Err(err).Timestamp().Msg("error update resi")
 			}

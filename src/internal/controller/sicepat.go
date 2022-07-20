@@ -8,8 +8,8 @@ import (
 	"github.com/rs/zerolog"
 )
 
-func UpdateResiSicepat(res *entity.Resi, log zerolog.Logger) (msg string, send bool, err error) {
-	resi, raw, err := entity.GetResiSicepatHistory(res.NoResi)
+func UpdateResiSicepat(res *entity.Resi, uri string, log zerolog.Logger) (msg string, send bool, err error) {
+	resi, raw, err := entity.GetResiSicepatHistory(uri, res.NoResi)
 	if err != nil {
 		log.Error().Timestamp().Err(err).Msg("GetResiHistory error")
 	}
