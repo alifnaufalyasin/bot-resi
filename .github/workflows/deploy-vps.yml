@@ -26,7 +26,8 @@ jobs:
           script: |
             cd ~/bot-resi
             git pull
-            cd ..
+            cd ~/deploy-file
+            git pull
             docker-compose -f deploybot.yml up -d --build
             docker image prune -f
             docker volume prune -f
