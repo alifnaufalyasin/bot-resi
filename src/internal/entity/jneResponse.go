@@ -48,12 +48,14 @@ func GetResiJNEHistory(trackingNumber string) lib.DetailTracking {
 			re := regexp.MustCompile(`(?i)delivered to \[(?P<name>[a-zA-Z0-9 ]+)`)
 			subexp := re.SubexpNames()
 			target := history.Data[len(history.Data)-1].Title
-			m := re.FindAllStringSubmatch(target, -1)[0]
-			for i, n := range m {
-				pattern := subexp[i]
-				n = strings.TrimSpace(n)
-				if pattern == "name" && lib.ArrayContains(receivers, n) {
-					is_delivered = true
+			if len(re.FindAllStringSubmatch(target, -1)) > 0 {
+				m := re.FindAllStringSubmatch(target, -1)[0]
+				for i, n := range m {
+					pattern := subexp[i]
+					n = strings.TrimSpace(n)
+					if pattern == "name" && lib.ArrayContains(receivers, n) {
+						is_delivered = true
+					}
 				}
 			}
 		}
