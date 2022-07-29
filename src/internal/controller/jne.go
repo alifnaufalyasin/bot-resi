@@ -13,6 +13,8 @@ import (
 func UpdateResiJNE(res *entity.Resi, log zerolog.Logger) (msg string, send bool, err error) {
 	resi := entity.GetResiJNEHistory(res.NoResi)
 
+	log.Info().Timestamp().Msgf("%+v", resi)
+
 	send = false
 
 	if res.History != "" {
