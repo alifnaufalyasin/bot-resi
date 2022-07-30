@@ -18,6 +18,7 @@ create table resi (
   "chat_id" varchar(100),
   "completed" boolean DEFAULT false,
   "name" varchar(100) DEFAULT '',
+  "is_deleted" boolean DEFAULT false,
   created_at TIMESTAMPTZ  DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMPTZ  DEFAULT CURRENT_TIMESTAMP
 )
