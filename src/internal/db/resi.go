@@ -10,12 +10,12 @@ import (
 )
 
 var (
-	querySearchResi          = "SELECT user_id, no_resi, vendor, history, chat_id, completed, name from resi WHERE completed = false "
+	querySearchResi          = "SELECT user_id, no_resi, vendor, history, chat_id, completed, name from resi WHERE completed = false and is_deleted = false "
 	querySearchAllResi       = "SELECT user_id, no_resi, vendor, history, chat_id, completed, name from resi "
 	queryInsertResi          = "INSERT INTO resi (user_id, no_resi, vendor, chat_id, name) VALUES ($1, $2, $3, $4, $5)"
 	queryUpdateResi          = "UPDATE resi SET history = $1, completed = $2, updated_at = NOW() WHERE no_resi = $3 and user_id = $4"
 	queryUpdateResiCompleted = "UPDATE resi SET completed = $1, updated_at = NOW() WHERE no_resi = $2 and user_id = $3"
-	queryDeleteResi          = "DELETE FROM resi WHERE user_id = $1 AND no_resi = $2"
+	queryDeleteResi          = "UPDATE resi SET is_deleted = true WHERE user_id = $1 AND no_resi = $2"
 )
 
 func (db Database) GetDataResi(ctx context.Context) ([]*entity.Resi, error) {
@@ -30,7 +30,7 @@ func (db Database) GetDataResi(ctx context.Context) ([]*entity.Resi, error) {
 }
 
 func (db Database) GetDataResiByUserId(ctx context.Context, userId string) ([]*entity.Resi, error) {
-	query := querySearchAllResi + "where user_id = $1 and updated_at >= $2"
+	query := querySearchAllResi + "where is_deleted = false and user_id = $1 and updated_at >= $2"
 	tanggal := time.Now().Add(-time.Hour * 24 * 50)
 	var allResi []*entity.Resi
 	err := pgxscan.Select(ctx, db.database, &allResi, query, userId, tanggal)
@@ -83,5 +83,10 @@ func (db Database) DeleteDataResi(ctx context.Context, userId string) error {
 		return err
 	}
 	_, err = db.database.Exec(ctx, queryDeleteResi, res.UserID, res.NoResi)
+	return err
+}
+
+func (db Database) DeleteDataResiByResi(ctx context.Context, userId, resi string) error {
+	_, err := db.database.Exec(ctx, queryDeleteResi, userId, resi)
 	return err
 }

@@ -144,6 +144,18 @@ func main() {
 				logger.Panic().Err(err).Timestamp().Msg("error send list")
 			}
 			continue
+		case "delete":
+			resi := strings.Split(MessageTelegram, " ")[1]
+			err = db.DeleteDataResiByResi(context.Background(), u.UserID, resi)
+			msg.Text = "Berhasil menghapus resi"
+			if err != nil {
+				logger.Error().Err(err).Timestamp().Msg("error delete resi")
+				msg.Text = "Get Resi gagal"
+			}
+			if _, err := bot.Send(msg); err != nil {
+				logger.Panic().Err(err).Timestamp().Msg("error send list")
+			}
+			continue
 		default:
 			msg.Text = "I don't know that command"
 		}
