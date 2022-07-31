@@ -9,11 +9,12 @@ import (
 )
 
 func UpdateResiSicepat(res *entity.Resi, uri string, log zerolog.Logger) (msg string, send bool, err error) {
+	send = false
 	resi, raw, err := entity.GetResiSicepatHistory(uri, res.NoResi)
 	if err != nil {
 		log.Error().Timestamp().Err(err).Msg("GetResiHistory error")
+		return
 	}
-	send = false
 
 	if res.History != "" {
 		resiDb := entity.SicepatRes{}
