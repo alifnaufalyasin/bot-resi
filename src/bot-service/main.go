@@ -37,7 +37,7 @@ func main() {
 
 	// Cron Function
 	s := gocron.NewScheduler(time.UTC)
-	_, err = s.Every(7).Minute().SingletonMode().Do(controller.CheckStatusResi, context.Background(), db, bot, cfg.UriSicepat, logger)
+	_, err = s.Every(7).Minute().SingletonMode().Do(controller.CheckStatusResi, context.Background(), db, bot, cfg.UriSicepat)
 	if err != nil {
 		logger.Logger.Error().Timestamp().Err(err).Msg("Cron error")
 	}

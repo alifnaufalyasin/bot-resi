@@ -12,11 +12,11 @@ import (
 	"github.com/rs/zerolog"
 )
 
-func CheckStatusResi(ctx context.Context, db db.Database, bot *tgbotapi.BotAPI, uri string, log zerolog.Logger) {
-	log.Info().Timestamp().Msg("Run Check")
+func CheckStatusResi(ctx context.Context, db db.Database, bot *tgbotapi.BotAPI, uri string) {
+	db.Logger.Logger.Info().Timestamp().Msg("Run Check")
 	dataResi, err := db.GetDataResi(ctx)
 	if err != nil {
-		log.Error().Timestamp().Err(err).Msg("GetDataResi error")
+		db.Logger.Logger.Error().Timestamp().Err(err).Msg("GetDataResi error")
 		db.Logger.SendAlertToAdmin("GetDataResi", err)
 	}
 	if len(dataResi) == 0 {
@@ -27,13 +27,13 @@ func CheckStatusResi(ctx context.Context, db db.Database, bot *tgbotapi.BotAPI, 
 		msg := ""
 		send := false
 		if res.Vendor == "sicepat" {
-			msg, send, err = UpdateResiSicepat(&res, uri, log)
+			msg, send, err = UpdateResiSicepat(&res, uri, db.Logger.Logger)
 			db.Logger.SendAlertToAdmin("Update Sicepat", err)
 
 		}
 
 		if res.Vendor == "jne" {
-			msg, send, err = UpdateResiJNE(&res, log)
+			msg, send, err = UpdateResiJNE(&res, db.Logger.Logger)
 			db.Logger.SendAlertToAdmin("Update JNE", err)
 
 		}
@@ -41,16 +41,16 @@ func CheckStatusResi(ctx context.Context, db db.Database, bot *tgbotapi.BotAPI, 
 		if send {
 			err = db.UpdateDataResi(ctx, res)
 			if err != nil {
-				log.Error().Timestamp().Err(err).Msg("UpdateDataResi error")
+				db.Logger.Logger.Error().Timestamp().Err(err).Msg("UpdateDataResi error")
 				db.Logger.SendAlertToAdmin("UpdateDataResi", err)
 			}
 			// Send message
 
 			chatId, err := strconv.ParseInt(res.ChatID, 10, 64)
 			if err != nil {
-				log.Error().Timestamp().Err(err).Msg("ParseInt error")
+				db.Logger.Logger.Error().Timestamp().Err(err).Msg("ParseInt error")
 			}
-			utils.SendUpdateResiToUser(bot, chatId, msg, log)
+			utils.SendUpdateResiToUser(bot, chatId, msg, db.Logger.Logger)
 		}
 	}
 
