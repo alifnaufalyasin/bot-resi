@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log"
 	"strconv"
@@ -64,6 +65,7 @@ func main() {
 
 		defer func() {
 			if errr := recover(); errr != nil {
+				db.Logger.SendAlertToAdmin("Panic", errors.New(fmt.Sprintf("%+v", errr)))
 				msg.Text = "No resi JNE invalid"
 				logger.Logger.Error().Fields(errr).Timestamp().Msg(msg.Text)
 				if _, err := bot.Send(msg); err != nil {
