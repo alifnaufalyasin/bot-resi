@@ -29,10 +29,10 @@ func (db Database) SaveUser(ctx context.Context, user *tgbotapi.User) (entity.Us
 		if err == pgx.ErrNoRows {
 			_, err = db.database.Exec(ctx, queryInsertUser, u.UserID, u.Username, u.Name)
 			if err != nil {
-				db.logger.Error().Timestamp().Err(err).Msg("Insert user failed")
+				db.Logger.Logger.Error().Timestamp().Err(err).Msg("Insert user failed")
 			}
 		} else {
-			db.logger.Error().Timestamp().Err(err).Msg("QueryRowUser failed")
+			db.Logger.Logger.Error().Timestamp().Err(err).Msg("QueryRowUser failed")
 		}
 	}
 	change := false
@@ -52,7 +52,7 @@ func (db Database) SaveUser(ctx context.Context, user *tgbotapi.User) (entity.Us
 	if change {
 		_, err = db.database.Exec(ctx, queryUpdateUser, u.Username, u.Name, u.UserID)
 		if err != nil {
-			db.logger.Error().Timestamp().Err(err).Msg("Update user failed")
+			db.Logger.Logger.Error().Timestamp().Err(err).Msg("Update user failed")
 		}
 	}
 

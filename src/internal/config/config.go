@@ -2,6 +2,7 @@ package config
 
 import (
 	"os"
+	"strconv"
 
 	"github.com/joho/godotenv"
 )
@@ -12,6 +13,7 @@ type Config struct {
 	Port             string `env:"PORT,default=80"`
 	TelegramApiToken string `env:"TELEGRAM_APITOKEN"`
 	UriSicepat       string `env:"URI_SICEPAT"`
+	AdminId          int64  `env:"admin"`
 }
 
 type DatabaseConfig struct {
@@ -21,8 +23,9 @@ type DatabaseConfig struct {
 func GetConfig() Config {
 	err := godotenv.Load()
 	if err != nil {
-
 	}
+
+	adminId, _ := strconv.ParseInt(os.Getenv("admin"), 10, 64)
 
 	return Config{
 		Database: DatabaseConfig{
@@ -32,5 +35,6 @@ func GetConfig() Config {
 		Port:             os.Getenv("PORT"),
 		TelegramApiToken: os.Getenv("TELEGRAM_APITOKEN"),
 		UriSicepat:       os.Getenv("URI_SICEPAT"),
+		AdminId:          adminId,
 	}
 }

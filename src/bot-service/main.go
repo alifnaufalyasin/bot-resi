@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"log"
 	"strconv"
 	"strings"
 	"time"
@@ -17,18 +18,17 @@ import (
 )
 
 func main() {
-	logger := utils.NewLogger()
 	cfg := config.GetConfig()
-	db := db.InitDB(context.Background(), cfg, logger)
-
 	bot, err := tgbotapi.NewBotAPI(cfg.TelegramApiToken)
 	if err != nil {
-		logger.Panic().Timestamp().Err(err)
+		log.Fatal(err)
 	}
+	logger := utils.NewLogger(bot, cfg.AdminId)
+	db := db.InitDB(context.Background(), cfg, logger)
 
 	bot.Debug = false
 
-	logger.Info().Timestamp().Msg(fmt.Sprintf("Authorized on account %s", bot.Self.UserName))
+	logger.Logger.Info().Timestamp().Msg(fmt.Sprintf("Authorized on account %s", bot.Self.UserName))
 
 	u := tgbotapi.NewUpdate(0)
 	u.Timeout = 60
@@ -39,14 +39,14 @@ func main() {
 	s := gocron.NewScheduler(time.UTC)
 	_, err = s.Every(7).Minute().SingletonMode().Do(controller.CheckStatusResi, context.Background(), db, bot, cfg.UriSicepat, logger)
 	if err != nil {
-		logger.Error().Timestamp().Err(err).Msg("Cron error")
+		logger.Logger.Error().Timestamp().Err(err).Msg("Cron error")
 	}
 	s.StartImmediately().StartAsync()
 
 	for update := range updates {
 		u, err := db.SaveUser(context.Background(), update.SentFrom())
 		if err != nil {
-			logger.Error().Timestamp().Err(err).Msg("failed to save user")
+			logger.Logger.Error().Timestamp().Err(err).Msg("failed to save user")
 		}
 
 		if update.Message == nil { // ignore any non-Message updates
@@ -65,13 +65,13 @@ func main() {
 		defer func() {
 			if errr := recover(); errr != nil {
 				msg.Text = "No resi JNE invalid"
-				logger.Error().Fields(errr).Timestamp().Msg(msg.Text)
+				logger.Logger.Error().Fields(errr).Timestamp().Msg(msg.Text)
 				if _, err := bot.Send(msg); err != nil {
-					logger.Error().Err(err).Timestamp().Msg("error send")
+					logger.Logger.Error().Err(err).Timestamp().Msg("error send")
 				}
 				err = db.DeleteDataResi(context.Background(), u.UserID)
 				if err != nil {
-					logger.Error().Err(err).Timestamp().Msg("Failed to delete invalid resi")
+					logger.Logger.Error().Err(err).Timestamp().Msg("Failed to delete invalid resi")
 				}
 			}
 		}()
@@ -83,31 +83,31 @@ func main() {
 		case "status":
 			msg.Text = "I'm ok."
 		case "sicepat":
-			res, err := controller.SaveDataResi(db, u, bot, MessageTelegram, logger)
+			res, err := controller.SaveDataResi(db, u, bot, MessageTelegram, logger.Logger)
 			if err != nil {
-				logger.Error().Err(err).Timestamp().Msg("error Save Resi")
+				logger.Logger.Error().Err(err).Timestamp().Msg("error Save Resi")
 			}
-			message, send, err := controller.UpdateResiSicepat(&res, cfg.UriSicepat, logger)
+			message, send, err := controller.UpdateResiSicepat(&res, cfg.UriSicepat, logger.Logger)
 			if err != nil {
-				logger.Error().Err(err).Timestamp().Msg("error update resi")
+				logger.Logger.Error().Err(err).Timestamp().Msg("error update resi")
 			}
-			err = controller.SendFirstResiUpdate(db, res, send, message, bot, logger)
+			err = controller.SendFirstResiUpdate(db, res, send, message, bot, logger.Logger)
 			if err != nil {
-				logger.Error().Err(err).Timestamp().Msg("error send")
+				logger.Logger.Error().Err(err).Timestamp().Msg("error send")
 			}
 			continue
 		case "jne":
-			res, err := controller.SaveDataResi(db, u, bot, MessageTelegram, logger)
+			res, err := controller.SaveDataResi(db, u, bot, MessageTelegram, logger.Logger)
 			if err != nil {
-				logger.Error().Err(err).Timestamp().Msg("error Save Resi")
+				logger.Logger.Error().Err(err).Timestamp().Msg("error Save Resi")
 			}
-			message, send, err := controller.UpdateResiJNE(&res, logger)
+			message, send, err := controller.UpdateResiJNE(&res, logger.Logger)
 			if err != nil {
-				logger.Error().Err(err).Timestamp().Msg("error update resi")
+				logger.Logger.Error().Err(err).Timestamp().Msg("error update resi")
 			}
-			err = controller.SendFirstResiUpdate(db, res, send, message, bot, logger)
+			err = controller.SendFirstResiUpdate(db, res, send, message, bot, logger.Logger)
 			if err != nil {
-				logger.Error().Err(err).Timestamp().Msg("error send")
+				logger.Logger.Error().Err(err).Timestamp().Msg("error send")
 			}
 			continue
 		case "stop":
@@ -119,7 +119,7 @@ func main() {
 				msg.Text = "Berhasil berhenti mendapatkan update resi. kirim /resume <no_resi> untuk melanjutkan mendapatkan update resi anda"
 			}
 			if _, err := bot.Send(msg); err != nil {
-				logger.Panic().Err(err).Timestamp().Msg("error send")
+				logger.Logger.Panic().Err(err).Timestamp().Msg("error send")
 			}
 			continue
 		case "resume":
@@ -131,7 +131,7 @@ func main() {
 				msg.Text = "Berhasil melanjutkan mendapatkan update resi. kirim /stop <no_resi> untuk berhenti mendapatkan update resi anda"
 			}
 			if _, err := bot.Send(msg); err != nil {
-				logger.Panic().Err(err).Timestamp().Msg("error send")
+				logger.Logger.Panic().Err(err).Timestamp().Msg("error send")
 			}
 			continue
 		case "list":
@@ -141,7 +141,7 @@ func main() {
 			}
 			msg.Text = utils.CreateMessageGetList(resi)
 			if _, err := bot.Send(msg); err != nil {
-				logger.Panic().Err(err).Timestamp().Msg("error send list")
+				logger.Logger.Panic().Err(err).Timestamp().Msg("error send list")
 			}
 			continue
 		case "delete":
@@ -149,11 +149,11 @@ func main() {
 			err = db.DeleteDataResiByResi(context.Background(), u.UserID, resi)
 			msg.Text = "Berhasil menghapus resi"
 			if err != nil {
-				logger.Error().Err(err).Timestamp().Msg("error delete resi")
+				logger.Logger.Error().Err(err).Timestamp().Msg("error delete resi")
 				msg.Text = "Get Resi gagal"
 			}
 			if _, err := bot.Send(msg); err != nil {
-				logger.Panic().Err(err).Timestamp().Msg("error send list")
+				logger.Logger.Panic().Err(err).Timestamp().Msg("error send list")
 			}
 			continue
 		default:
@@ -161,7 +161,7 @@ func main() {
 		}
 		if msg.Text != "" {
 			if _, err := bot.Send(msg); err != nil {
-				logger.Panic().Err(err).Timestamp().Msg("error send")
+				logger.Logger.Panic().Err(err).Timestamp().Msg("error send")
 			}
 		}
 	}

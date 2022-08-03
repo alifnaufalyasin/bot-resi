@@ -22,7 +22,7 @@ func (db Database) GetDataResi(ctx context.Context) ([]*entity.Resi, error) {
 	var allResi []*entity.Resi
 	err := pgxscan.Select(ctx, db.database, &allResi, querySearchResi)
 	if err != nil {
-		db.logger.Error().Timestamp().Err(err).Msg("GetDataResi failed")
+		db.Logger.Logger.Error().Timestamp().Err(err).Msg("GetDataResi failed")
 		return nil, err
 	}
 
@@ -35,7 +35,7 @@ func (db Database) GetDataResiByUserId(ctx context.Context, userId string) ([]*e
 	var allResi []*entity.Resi
 	err := pgxscan.Select(ctx, db.database, &allResi, query, userId, tanggal)
 	if err != nil {
-		db.logger.Error().Timestamp().Err(err).Msg("GetDataResiByUserId failed")
+		db.Logger.Logger.Error().Timestamp().Err(err).Msg("GetDataResiByUserId failed")
 		return nil, err
 	}
 
@@ -43,32 +43,32 @@ func (db Database) GetDataResiByUserId(ctx context.Context, userId string) ([]*e
 }
 
 func (db Database) UpdateDataResi(ctx context.Context, resi entity.Resi) error {
-	db.logger.Info().Timestamp().Msgf("UpdateDataResi %v", resi)
+	db.Logger.Logger.Info().Timestamp().Msgf("UpdateDataResi %v", resi)
 	what, err := db.database.Exec(ctx, queryUpdateResi, resi.History, resi.Completed, resi.NoResi, resi.UserID)
 	if err != nil {
-		db.logger.Error().Timestamp().Err(err).Msg("Update Resi failed")
+		db.Logger.Logger.Error().Timestamp().Err(err).Msg("Update Resi failed")
 	}
-	db.logger.Info().Timestamp().Msgf("What %v", what)
+	db.Logger.Logger.Info().Timestamp().Msgf("What %v", what)
 
 	return err
 }
 
 func (db Database) UpdateDataResiCompleted(ctx context.Context, completed bool, resi, userId string) error {
-	db.logger.Info().Timestamp().Msgf("UpdateDataResi %v", resi)
+	db.Logger.Logger.Info().Timestamp().Msgf("UpdateDataResi %v", resi)
 	what, err := db.database.Exec(ctx, queryUpdateResiCompleted, completed, resi, userId)
 	if err != nil {
-		db.logger.Error().Timestamp().Err(err).Msg("Update Resi Completed failed")
+		db.Logger.Logger.Error().Timestamp().Err(err).Msg("Update Resi Completed failed")
 	}
-	db.logger.Info().Timestamp().Msgf("What %v", what)
+	db.Logger.Logger.Info().Timestamp().Msgf("What %v", what)
 
 	return err
 }
 
 func (db Database) SaveDataResi(ctx context.Context, user entity.User, vendor, noResi, chatId, name string) error {
-	db.logger.Info().Timestamp().Msg("Save Data Resi")
+	db.Logger.Logger.Info().Timestamp().Msg("Save Data Resi")
 	_, err := db.database.Exec(ctx, queryInsertResi, user.UserID, noResi, vendor, chatId, name)
 	if err != nil {
-		db.logger.Error().Timestamp().Err(err).Msg("Save Resi failed")
+		db.Logger.Logger.Error().Timestamp().Err(err).Msg("Save Resi failed")
 	}
 	return err
 }
