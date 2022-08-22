@@ -36,7 +36,7 @@ func CheckStatusResi(ctx context.Context, db db.Database, bot *tgbotapi.BotAPI, 
 
 		if res.Vendor == "jne" {
 			msg, send, err = UpdateResiJNE(&res, db.Logger.Logger)
-			if err != nil 
+			if err != nil {
 				db.Logger.SendAlertToAdmin("Update JNE", err)
 			}
 
