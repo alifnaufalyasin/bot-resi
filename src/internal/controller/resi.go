@@ -28,13 +28,17 @@ func CheckStatusResi(ctx context.Context, db db.Database, bot *tgbotapi.BotAPI, 
 		send := false
 		if res.Vendor == "sicepat" {
 			msg, send, err = UpdateResiSicepat(&res, uri, db.Logger.Logger)
-			db.Logger.SendAlertToAdmin("Update Sicepat", err)
+			if err != nil {
+				db.Logger.SendAlertToAdmin("Update Sicepat", err)
+			}
 
 		}
 
 		if res.Vendor == "jne" {
 			msg, send, err = UpdateResiJNE(&res, db.Logger.Logger)
-			db.Logger.SendAlertToAdmin("Update JNE", err)
+			if err != nil 
+				db.Logger.SendAlertToAdmin("Update JNE", err)
+			}
 
 		}
 
