@@ -1,16 +1,16 @@
 create table users (
-  "id" bigserial PRIMARY KEY,
+  "id" varchar(30) PRIMARY KEY,
   "user_id" varchar(255),
   "username" varchar(255),
   "name" varchar(255),
   created_at TIMESTAMPTZ  DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMPTZ  DEFAULT CURRENT_TIMESTAMP
-)
+);
 CREATE UNIQUE INDEX IF NOT EXISTS idx_user_id_uniq ON users(user_id);
 CREATE UNIQUE INDEX IF NOT EXISTS idx_username_uniq ON users(username);
 
 create table resi (
-  "id" bigserial PRIMARY KEY,
+  "id" varchar(30) PRIMARY KEY,
   "user_id" varchar(255),
   "no_resi" varchar(100),
   "vendor" varchar(100),
@@ -21,11 +21,11 @@ create table resi (
   "is_deleted" boolean DEFAULT false,
   created_at TIMESTAMPTZ  DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMPTZ  DEFAULT CURRENT_TIMESTAMP
-)
+);
 CREATE UNIQUE INDEX IF NOT EXISTS idx_resi_user_id_uniq ON resi(no_resi,user_id);
 
 -- CREATE TABLE public.resi (
--- 	id bigserial NOT NULL,
+-- 	id varchar(30) NOT NULL,
 -- 	user_id varchar(255) NULL,
 -- 	no_resi varchar(100) NULL,
 -- 	vendor varchar(100) NULL,
@@ -40,7 +40,7 @@ CREATE UNIQUE INDEX IF NOT EXISTS idx_resi_user_id_uniq ON resi(no_resi,user_id)
 -- CREATE UNIQUE INDEX idx_resi_user_id_uniq ON public.resi USING btree (user_id, no_resi);
 
 -- CREATE TABLE public.users (
--- 	id int8 NOT NULL DEFAULT nextval('user_id_seq'::regclass),
+-- 	id int8 NOT NULL,
 -- 	user_id varchar(255) NULL,
 -- 	username varchar(255) NULL,
 -- 	"name" varchar(255) NULL,

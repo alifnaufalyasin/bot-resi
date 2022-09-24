@@ -44,6 +44,7 @@ require (
 	github.com/aprilahijriyan/gojne v0.0.0-20211205175532-923536de0a25
 	github.com/georgysavva/scany v1.0.0
 	github.com/go-co-op/gocron v1.15.0
+	github.com/google/uuid v1.3.0
 	github.com/jackc/pgx/v4 v4.16.1
 	github.com/mattn/go-colorable v0.1.12 // indirect
 	github.com/mattn/go-isatty v0.0.14 // indirect

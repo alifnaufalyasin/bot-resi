@@ -7,12 +7,13 @@ import (
 	"time"
 
 	"github.com/georgysavva/scany/pgxscan"
+	"github.com/google/uuid"
 )
 
 var (
 	querySearchResi          = "SELECT user_id, no_resi, vendor, history, chat_id, completed, name from resi WHERE completed = false and is_deleted = false "
 	querySearchAllResi       = "SELECT user_id, no_resi, vendor, history, chat_id, completed, name from resi "
-	queryInsertResi          = "INSERT INTO resi (user_id, no_resi, vendor, chat_id, name) VALUES ($1, $2, $3, $4, $5)"
+	queryInsertResi          = "INSERT INTO resi (id, user_id, no_resi, vendor, chat_id, name) VALUES ($1, $2, $3, $4, $5, %6)"
 	queryUpdateResi          = "UPDATE resi SET history = $1, completed = $2, updated_at = NOW() WHERE no_resi = $3 and user_id = $4"
 	queryUpdateResiCompleted = "UPDATE resi SET completed = $1, updated_at = NOW() WHERE no_resi = $2 and user_id = $3"
 	queryDeleteResi          = "UPDATE resi SET is_deleted = true WHERE user_id = $1 AND no_resi = $2"
@@ -66,7 +67,7 @@ func (db Database) UpdateDataResiCompleted(ctx context.Context, completed bool, 
 
 func (db Database) SaveDataResi(ctx context.Context, user entity.User, vendor, noResi, chatId, name string) error {
 	db.Logger.Logger.Info().Timestamp().Msg("Save Data Resi")
-	_, err := db.database.Exec(ctx, queryInsertResi, user.UserID, noResi, vendor, chatId, name)
+	_, err := db.database.Exec(ctx, queryInsertResi, uuid.NewString(), user.UserID, noResi, vendor, chatId, name)
 	if err != nil {
 		db.Logger.Logger.Error().Timestamp().Err(err).Msg("Save Resi failed")
 	}

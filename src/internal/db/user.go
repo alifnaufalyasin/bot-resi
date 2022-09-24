@@ -7,12 +7,13 @@ import (
 	"strconv"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
+	"github.com/google/uuid"
 	"github.com/jackc/pgx/v4"
 )
 
 var (
 	querySearchUser = "SELECT id, user_id, username, name from users"
-	queryInsertUser = "INSERT INTO users (user_id, username, name) VALUES ($1, $2, $3)"
+	queryInsertUser = "INSERT INTO users (id, user_id, username, name) VALUES ($1, $2, $3, $4)"
 	queryUpdateUser = "UPDATE users SET username = $1, name = $2, updated_at = NOW() WHERE user_id = $3"
 )
 
@@ -27,7 +28,7 @@ func (db Database) SaveUser(ctx context.Context, user *tgbotapi.User) (entity.Us
 		Scan(&u.Id, &u.UserID, &u.Username, &u.Name)
 	if err != nil {
 		if err == pgx.ErrNoRows {
-			_, err = db.database.Exec(ctx, queryInsertUser, u.UserID, u.Username, u.Name)
+			_, err = db.database.Exec(ctx, queryInsertUser, uuid.NewString(), u.UserID, u.Username, u.Name)
 			if err != nil {
 				db.Logger.Logger.Error().Timestamp().Err(err).Msg("Insert user failed")
 			}
