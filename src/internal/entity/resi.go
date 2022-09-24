@@ -1,7 +1,7 @@
 package entity
 
 type Resi struct {
-	Id        int64
+	Id        string
 	UserID    string
 	NoResi    string
 	Vendor    string
