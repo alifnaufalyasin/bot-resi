@@ -1,5 +1,5 @@
 create table users (
-  "id" varchar(30) PRIMARY KEY,
+  "id" varchar(100) PRIMARY KEY,
   "user_id" varchar(255),
   "username" varchar(255),
   "name" varchar(255),
@@ -10,7 +10,7 @@ CREATE UNIQUE INDEX IF NOT EXISTS idx_user_id_uniq ON users(user_id);
 CREATE UNIQUE INDEX IF NOT EXISTS idx_username_uniq ON users(username);
 
 create table resi (
-  "id" varchar(30) PRIMARY KEY,
+  "id" varchar(100) PRIMARY KEY,
   "user_id" varchar(255),
   "no_resi" varchar(100),
   "vendor" varchar(100),
