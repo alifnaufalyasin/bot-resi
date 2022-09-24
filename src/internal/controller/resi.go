@@ -57,9 +57,6 @@ func CheckStatusResi(ctx context.Context, db db.Database, bot *tgbotapi.BotAPI, 
 			utils.SendUpdateResiToUser(bot, chatId, msg, db.Logger.Logger)
 		}
 	}
-
-	return
-
 }
 
 func SaveDataResi(db db.Database, u entity.User, bot *tgbotapi.BotAPI, Text string, log zerolog.Logger) (res entity.Resi, err error) {
@@ -105,7 +102,7 @@ func SendFirstResiUpdate(db db.Database, res entity.Resi, send bool, message str
 		if err != nil {
 			log.Error().Timestamp().Err(err).Msg("ParseInt error")
 		}
-		err = utils.SendUpdateResiToUser(bot, chatId, message, log)
+		return utils.SendUpdateResiToUser(bot, chatId, message, log)
 	}
 	return
 }

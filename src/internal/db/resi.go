@@ -13,7 +13,7 @@ import (
 var (
 	querySearchResi          = "SELECT user_id, no_resi, vendor, history, chat_id, completed, name from resi WHERE completed = false and is_deleted = false "
 	querySearchAllResi       = "SELECT user_id, no_resi, vendor, history, chat_id, completed, name from resi "
-	queryInsertResi          = "INSERT INTO resi (id, user_id, no_resi, vendor, chat_id, name) VALUES ($1, $2, $3, $4, $5, %6)"
+	queryInsertResi          = "INSERT INTO resi (id, user_id, no_resi, vendor, chat_id, name) VALUES ($1, $2, $3, $4, $5, $6)"
 	queryUpdateResi          = "UPDATE resi SET history = $1, completed = $2, updated_at = NOW() WHERE no_resi = $3 and user_id = $4"
 	queryUpdateResiCompleted = "UPDATE resi SET completed = $1, updated_at = NOW() WHERE no_resi = $2 and user_id = $3"
 	queryDeleteResi          = "UPDATE resi SET is_deleted = true WHERE user_id = $1 AND no_resi = $2"
